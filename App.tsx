@@ -132,6 +132,8 @@ const App: React.FC = () => {
 
   return (
     <div className="w-full h-full relative font-sans">
+
+
       {renderView()}
     </div>
   );
