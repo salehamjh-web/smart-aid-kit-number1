@@ -8,6 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
       body {
         font-family: 'Inter', sans-serif;
         user-select: none; /* Prevent text selection in kiosk mode */
@@ -36,7 +42,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-50 text-slate-900 overflow-hidden h-screen w-screen">
+  <body>
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
