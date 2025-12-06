@@ -83,13 +83,37 @@ const App: React.FC = () => {
           />
         );
       case 'BLEEDING':
-        return <GuideFlow title={content.home.bleeding} steps={content.bleeding_steps} onBack={goHome} colorTheme="red" content={content} />;
+        return (
+          <GuideFlow 
+            title={content.home.bleeding} 
+            steps={content.bleeding_steps} 
+            onBack={goHome} 
+            colorTheme="orange" // تم التغيير إلى البرتقالي
+            content={content} 
+          />
+        );
       case 'BURNS':
-        return <GuideFlow title={content.home.burns} steps={content.burns_steps} onBack={goHome} colorTheme="orange" content={content} />;
+        return (
+          <GuideFlow 
+            title={content.home.burns} 
+            steps={content.burns_steps} 
+            onBack={goHome} 
+            colorTheme="pink" // تم التغيير إلى الزهري
+            content={content} 
+          />
+        );
       case 'FAINTING':
         return <FaintingDecision onBack={goHome} content={content} />;
       case 'WOUNDS':
-        return <GuideFlow title={content.home.wounds} steps={content.wounds_steps} onBack={goHome} colorTheme="emerald" content={content} />;
+        return (
+          <GuideFlow 
+            title={content.home.wounds} 
+            steps={content.wounds_steps} 
+            onBack={goHome} 
+            colorTheme="emerald" 
+            content={content} 
+          />
+        );
       case 'CPR':
         return <CPRView onBack={goHome} content={content} />;
       case 'KIT':
