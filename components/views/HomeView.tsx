@@ -40,7 +40,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, language, toggle
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-900">
+    <div className="flex flex-col">
       
       {/* Fixed Home Header */}
       <div className="bg-slate-800 text-white p-4 shadow-lg flex items-center justify-between border-b border-slate-700 shrink-0 h-24">
@@ -84,8 +84,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, language, toggle
       </div>
 
       {/* Main Grid Content */}
-      <div className="flex-1 p-6 overflow-hidden">
-        <div className="grid grid-cols-2 grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 gap-6 h-full">
+      <div className="flex-1 p-6">
+        <div className="grid grid-cols-2 grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 gap-6">
           {buttons.map((btn, idx) => (
             <button
               key={idx}

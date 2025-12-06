@@ -7,8 +7,7 @@ interface GuideFlowProps {
   title: string;
   steps: GuideStep[];
   onBack: () => void;
-  // 👇 1. أضفنا pink هنا
-  colorTheme: 'red' | 'orange' | 'blue' | 'emerald' | 'pink';
+  colorTheme: 'red' | 'orange' | 'blue' | 'emerald';
   content: AppContent;
 }
 
@@ -22,7 +21,7 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
   const [isRunning, setIsRunning] = useState(false);
 
   // 🔊 Audio State
-  const [isMuted, setIsMuted] = useState(false); 
+  const [isMuted, setIsMuted] = useState(false); // الصوت يعمل افتراضياً
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
 
@@ -38,8 +37,10 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
         setVoices(availableVoices);
       };
 
+      // محاولة التحميل فوراً
       loadVoices();
 
+      // Chrome يحتاج لهذا الحدث
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
       }
@@ -51,31 +52,35 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
   }, []);
 
   // ==============================
-  // 🔊 2. دالة التحدث الذكية
+  // 🔊 2. دالة التحدث الذكية (Smart Speak)
   // ==============================
   const speakText = (text: string) => {
     if (!synthesisRef.current || isMuted) return;
 
+    // إيقاف أي صوت سابق
     synthesisRef.current.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
     
+    // اكتشاف هل النص عربي؟
     const isArabic = /[\u0600-\u06FF]/.test(text);
 
     if (isArabic) {
+      // 🧠 البحث الذكي عن أي صوت عربي
       const arabicVoice = voices.find(v => v.lang.includes('ar'));
       
       if (arabicVoice) {
         utterance.voice = arabicVoice;
-        utterance.lang = arabicVoice.lang;
+        utterance.lang = arabicVoice.lang; // استخدام لهجة الصوت المتاح
       } else {
+        // محاولة فرض اللغة حتى لو لم نجد صوتاً محدداً
         utterance.lang = 'ar'; 
       }
     } else {
       utterance.lang = 'en-US';
     }
 
-    utterance.rate = 0.9;
+    utterance.rate = 0.9; // سرعة القراءة
     synthesisRef.current.speak(utterance);
   };
 
@@ -83,6 +88,7 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
   // 🔊 3. التشغيل عند تغيير الخطوة
   // ==============================
   useEffect(() => {
+    // ننتظر قليلاً جداً لضمان تحميل الأصوات في المرة الأولى
     const timer = setTimeout(() => {
       if (!isMuted) {
         speakText(step.instruction);
@@ -90,7 +96,7 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [currentStep, isMuted, voices]);
+  }, [currentStep, isMuted, voices]); // أضفنا voices للمراقبة
 
   // ==============================
   // ⏱️ Timer Logic
@@ -136,40 +142,18 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 👇 2. أضفنا ألوان الـ Pink هنا (للبطاقة الرئيسية)
   const themeColors = {
     red: 'bg-red-50 text-red-900 border-red-200',
     orange: 'bg-orange-50 text-orange-900 border-orange-200',
     blue: 'bg-blue-50 text-blue-900 border-blue-200',
-    emerald: 'bg-emerald-50 text-emerald-900 border-emerald-200',
-    pink: 'bg-pink-50 text-pink-900 border-pink-200'
+    emerald: 'bg-emerald-50 text-emerald-900 border-emerald-200'
   };
 
-  // 👇 3. أضفنا ألوان الـ Pink هنا (للأزرار)
   const buttonColors = {
     red: 'bg-red-600 active:bg-red-700',
     orange: 'bg-orange-500 active:bg-orange-600',
     blue: 'bg-blue-600 active:bg-blue-700',
-    emerald: 'bg-emerald-600 active:bg-emerald-700',
-    pink: 'bg-pink-600 active:bg-pink-700'
-  };
-
-  // ألوان النصوص (مساعدة لترتيب الكود)
-  const textColors = {
-    red: 'text-red-600',
-    orange: 'text-orange-600',
-    blue: 'text-blue-600',
-    emerald: 'text-emerald-600',
-    pink: 'text-pink-600'
-  };
-
-  // ألوان خلفية الأيقونات
-  const iconBgColors = {
-    red: 'bg-red-100 text-red-600',
-    orange: 'bg-orange-100 text-orange-600',
-    blue: 'bg-blue-100 text-blue-600',
-    emerald: 'bg-emerald-100 text-emerald-600',
-    pink: 'bg-pink-100 text-pink-600'
+    emerald: 'bg-emerald-600 active:bg-emerald-700'
   };
 
   return (
@@ -179,8 +163,11 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
       {/* Progress Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-b border-slate-200">
          <div className="flex items-center gap-4">
-           {/* 👇 تحديث: استخدام مصفوفة الألوان بدلاً من الشروط الطويلة */}
-           <span className={`text-2xl font-black uppercase tracking-wider ${textColors[colorTheme]}`}>
+           <span className={`text-2xl font-black uppercase tracking-wider ${
+             colorTheme === 'red' ? 'text-red-600' : 
+             colorTheme === 'orange' ? 'text-orange-600' : 
+             colorTheme === 'blue' ? 'text-blue-600' : 'text-emerald-600'
+           }`}>
              {content.ui.step} {currentStep + 1} {content.ui.of} {steps.length}
            </span>
 
@@ -189,6 +176,8 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
              onClick={() => {
                if (isMuted) {
                  setIsMuted(false);
+                 // نطق فوري عند إلغاء الكتم للتأكيد
+                 // speakText(step.instruction); 
                } else {
                  setIsMuted(true);
                  if (synthesisRef.current) synthesisRef.current.cancel();
@@ -229,8 +218,7 @@ export const GuideFlow: React.FC<GuideFlowProps> = ({ title, steps, onBack, colo
                  className="h-48 md:h-64 object-contain mb-8 rounded-2xl border-2 border-slate-200 shadow-md bg-white"
                />
             ) : (
-              // 👇 تحديث: استخدام مصفوفة ألوان الأيقونات الجديدة
-              <div className={`p-8 rounded-full mb-8 shrink-0 ${iconBgColors[colorTheme]}`}>
+              <div className={`p-8 rounded-full mb-8 shrink-0 ${colorTheme === 'red' ? 'bg-red-100 text-red-600' : colorTheme === 'orange' ? 'bg-orange-100 text-orange-600' : colorTheme === 'blue' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'}`}>
                 {step.imageIcon && <step.imageIcon size={100} strokeWidth={1.5} />}
               </div>
             )}
